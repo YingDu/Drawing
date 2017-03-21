@@ -18,7 +18,7 @@ namespace Drawing.Models
         /// </summary>
         /// <param name="offsetX">横坐标偏移量</param>
         /// <param name="offsetY">纵坐标偏移量</param>
-        void Move(double offsetX, double offsetY);
+       
 
         /// <summary>
         /// 将图形放大到指定倍数

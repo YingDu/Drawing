@@ -27,6 +27,7 @@ namespace Drawing.Models
             }
         }
 
+
         public Rectangle(double width, double height)
         {
             Width = width;
@@ -43,12 +44,9 @@ namespace Drawing.Models
             Instance.Width = Width;
             Instance.Height = Height;
             Instance.Stroke = _stroke;
+            Instance.Fill = Brushes.Tomato;
         }
 
-        public void Move(double offsetX, double offsetY)
-        {
-            throw new NotImplementedException();
-        }
 
         public void ZoomIn(double multiple)
         {

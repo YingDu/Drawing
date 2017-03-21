@@ -8,6 +8,7 @@ namespace Drawing.Models
     {
         public double Radius { get; private set; }
 
+
         public override double Area
         {
             get
@@ -16,6 +17,7 @@ namespace Drawing.Models
             }
         }
 
+        
         public override double Perimeter
         {
             get
@@ -23,6 +25,8 @@ namespace Drawing.Models
                 return 2 * Math.PI * Radius;
             }
         }
+
+        
 
         public Circle(double radius)
         {
@@ -36,15 +40,16 @@ namespace Drawing.Models
             {
                 Instance = new Ellipse();
             }
+
             Instance.Width = 2 * Radius;
             Instance.Height = 2 * Radius;
             Instance.Stroke = _stroke;
+            Instance.Fill = Brushes.Tomato;
+
+
         }
 
-        public void Move(double offsetX, double offsetY)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public void ZoomIn(double multiple)
         {

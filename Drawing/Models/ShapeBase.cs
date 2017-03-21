@@ -16,5 +16,7 @@ namespace Drawing.Models
         public Shape Instance { get; protected set; } //内部可设置
 
         protected Brush _stroke;
+
+         
     }
 }
