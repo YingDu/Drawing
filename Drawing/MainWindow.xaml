@@ -9,8 +9,8 @@
         Title="画图" Height="600" Width="900">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="136*"/>
-            <ColumnDefinition Width="757*"/>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="48"/>
@@ -23,6 +23,8 @@
             <Button Content="缩小" Width="{Binding RelativeSource={RelativeSource Self},Path=ActualHeight}" Click="ZoomOut_Click" Style="{DynamicResource MetroCircleButtonStyle}"></Button>
         </StackPanel>
         <Canvas Name="Stage" Margin="2" Grid.Row="1" Background="GhostWhite" Grid.ColumnSpan="2">
+            <TextBlock Name="ShowArea" IsEnabled="False" TextWrapping="Wrap" Text="面积：" Background="AntiqueWhite" Canvas.Top="487" Width="115" Height="30" />
+
 
         </Canvas>
     </Grid>

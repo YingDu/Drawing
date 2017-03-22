@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace Drawing.Models
 {
-    class Rectangle : ShapeBase, IShape
+    class Rectangle : ShapeBase
     {
         public double Width { get; set; }
         public double Height { get; set; }
@@ -34,7 +30,7 @@ namespace Drawing.Models
             Height = height;
         }
 
-        public void Draw()
+        public override void Draw()
         {
             _stroke = Brushes.Red;
             if (Instance == null)
@@ -47,23 +43,11 @@ namespace Drawing.Models
             Instance.Fill = Brushes.Tomato;
         }
 
-
-        public void ZoomIn(double multiple)
+        protected override void Zoom(double multiple)
         {
-            if (multiple < 1)
+            if(multiple <= 0)
             {
-                throw new ArgumentOutOfRangeException("放大倍数必须大于1。");
-            }
-            Width = Width * multiple;
-            Height = Height * multiple;
-            Draw();
-        }
-
-        public void ZoomOut(double multiple)
-        {
-            if(multiple > 1 || multiple <= 0)
-            {
-                throw new ArgumentOutOfRangeException("缩小倍数必须小于1。");
+                throw new ArgumentOutOfRangeException("缩放倍数必须大于0。");
             }
             Width = Width * multiple;
             Height = Height * multiple;

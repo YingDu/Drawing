@@ -1,19 +1,11 @@
 ﻿using Drawing.Models;
-using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Drawing
@@ -26,76 +18,87 @@ namespace Drawing
         public MainWindow()
         {
             InitializeComponent();
+            
         }
-        private Point initMousePoint;
-        private Point currentMousePoint;
-        private double canvasInitTop;
-        private double canvasInitLeft;
 
+        private Point initMousePoint; //鼠标起始位置坐标
+        private Point currentMousePoint;    //当前鼠标坐标
+        private double canvasInitTop;       //起始位置canvas坐标
+        private double canvasInitLeft;      //当前位置canvas坐标
 
-        private List<ShapeBase> _diagram = new List<ShapeBase>();
+        private List<ShapeBase> _diagram = new List<ShapeBase>();   //存储canvas上的图形
 
-        private ShapeBase _selectedShape;
+        private ShapeBase _selectedShape;   //存储被选中的图形
 
+        //画圆
         private void NewCircle_Click(object sender, RoutedEventArgs e)
         {
-
-            var circle = new Circle(80);
-
-            circle.Draw();
-            _diagram.Add(circle);
-            var rnd = new Random();
-            canvasInitTop = (double)rnd.Next((int)Height / 2);
-            canvasInitLeft = (double)rnd.Next((int)Width / 2);
-            circle.Instance.SetValue(Canvas.TopProperty, canvasInitTop);
-            circle.Instance.SetValue(Canvas.LeftProperty, canvasInitLeft);
-
-            circle.Instance.MouseRightButtonDown += ShapeInstance_MouseRightButtonDown;
-            circle.Instance.MouseRightButtonUp += ShapeInstance_MouseRightButtonUp;
-            circle.Instance.MouseMove += ShapeInstance_MouseMove;
-
-            circle.Instance.MouseLeftButtonUp += ShapeInstance_MouseLeftButtonUp;
-
-            Stage.Children.Add(circle.Instance);
+            CreateNewShape(ShapeType.Circle);
         }
 
+        private void CreateNewShape(ShapeType type)
+        {
+            ShapeBase shape = null;
+            switch (type)
+            {
+                case ShapeType.Circle:
+                    shape = new Circle(80); 
+                    break;
+                case ShapeType.Rectangle:
+                    shape = new Models.Rectangle(150, 200);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+            
+            shape.Draw();
+            _diagram.Add(shape);
+            var rnd = new Random();
+            canvasInitTop = 0;
+            canvasInitLeft = 0;
+            shape.Instance.SetValue(Canvas.TopProperty, canvasInitTop);
+            shape.Instance.SetValue(Canvas.LeftProperty, canvasInitLeft);
+
+            shape.Instance.MouseLeftButtonDown += ShapeInstance_MouseLeftButtonDown;
+            shape.Instance.MouseLeftButtonUp += ShapeInstance_MouseLeftButtonUp;
+            shape.Instance.MouseMove += ShapeInstance_MouseMove;
+
+            shape.Instance.MouseLeftButtonUp += ShapeInstance_MouseLeftButtonUp;
+
+            Stage.Children.Add(shape.Instance);
+        }
+
+        //画正方形
         private void NewRectangle_Click(object sender, RoutedEventArgs e)
         {
-            var rectangle = new Models.Rectangle(100, 100);
-            rectangle.Draw();
-            _diagram.Add(rectangle);
-            var rnd = new Random();
-            canvasInitTop = (double)rnd.Next((int)Height);
-            canvasInitLeft = (double)rnd.Next((int)(Width));
-            rectangle.Instance.SetValue(Canvas.TagProperty, canvasInitTop);
-            rectangle.Instance.SetValue(Canvas.LeftProperty, canvasInitLeft);
-
-            rectangle.Instance.MouseRightButtonDown += ShapeInstance_MouseRightButtonDown;
-            rectangle.Instance.MouseRightButtonUp += ShapeInstance_MouseRightButtonUp;
-            rectangle.Instance.MouseMove += ShapeInstance_MouseMove;
-
-            rectangle.Instance.MouseLeftButtonUp += ShapeInstance_MouseLeftButtonUp;
-
-            Stage.Children.Add(rectangle.Instance);
+            CreateNewShape(ShapeType.Rectangle);
         }
 
         #region Zoom function
 
+        //鼠标左键松开
         private void ShapeInstance_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            if (sender is Shape shape)
+            {
+                shape.ReleaseMouseCapture();
+                shape.StrokeThickness = 1;
+            }
             if ((sender as Shape) != null)
             {
                 _selectedShape = _diagram.Where(s => s.Instance == (Shape)sender).FirstOrDefault();
+                
+                ShowArea.Text = "面积: " + _selectedShape.Area.ToString();
             }
         }
 
+        //缩小
         private void ZoomIn_Click(object sender, RoutedEventArgs e)
         {
             if (_selectedShape != null)
             {
-                IShape temp = (IShape)_selectedShape;
-                temp.ZoomIn(1.1);
-                _selectedShape = null;
+                _selectedShape.ZoomIn(1.1);
+                ShowArea.Text = "面积: " + _selectedShape.Area.ToString();
             }
             else
             {
@@ -103,12 +106,13 @@ namespace Drawing
             }
         }
 
+        //放大
         private void ZoomOut_Click(object sender, RoutedEventArgs e)
         {
             if (_selectedShape != null)
             {
-                IShape temp = (IShape)_selectedShape;
-                temp.ZoomOut(0.9);
+                _selectedShape.ZoomOut(0.9);
+                ShowArea.Text = "面积: " + _selectedShape.Area.ToString();
             }
             else
             {
@@ -119,7 +123,8 @@ namespace Drawing
 
         #region Drag function
 
-        private void ShapeInstance_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        //鼠标左键点击选中图形
+        private void ShapeInstance_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is Shape shape && e.ClickCount == 1)
             {
@@ -129,23 +134,24 @@ namespace Drawing
                 canvasInitLeft = Canvas.GetLeft(shape);
                 canvasInitTop = Canvas.GetTop(shape);
                 shape.RaiseEvent(new DragStartedEventArgs(0, 0));
+                shape.StrokeThickness = 3;
+
+                //将选中的图形置于顶层
+                Canvas parent = shape.Parent as Canvas;
+                var maxZ = parent.Children.OfType<UIElement>()
+                    .Where(x => x != shape)
+                    .Select(x => Panel.GetZIndex(x))
+                    .Max();
+                Panel.SetZIndex(shape, maxZ + 1);                         
             }
             e.Handled = true;
         }
 
-        private void ShapeInstance_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is Shape shape)
-            {
-                shape.ReleaseMouseCapture();
-            }
-        }
-
+        //鼠标移动
         private void ShapeInstance_MouseMove(object sender, MouseEventArgs e)
         {
-            if (sender is Shape shape && shape.IsMouseCaptured)
+            if (sender is Shape shape && e.LeftButton==MouseButtonState.Pressed)
             {
-                shape.RaiseEvent(new DragDeltaEventArgs(0, 0));
                 currentMousePoint = e.GetPosition(this);
                 double leftOffset = currentMousePoint.X - initMousePoint.X;
                 double topOffset = currentMousePoint.Y - initMousePoint.Y;

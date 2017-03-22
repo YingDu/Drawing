@@ -4,10 +4,9 @@ using System.Windows.Shapes;
 
 namespace Drawing.Models
 {
-    class Circle : ShapeBase, IShape
+    class Circle : ShapeBase
     {
         public double Radius { get; private set; }
-
 
         public override double Area
         {
@@ -25,15 +24,13 @@ namespace Drawing.Models
                 return 2 * Math.PI * Radius;
             }
         }
-
-        
-
+       
         public Circle(double radius)
         {
             Radius = radius;
         }
 
-        public void Draw()
+        public override void Draw()
         {
             _stroke = Brushes.Red;
             if (Instance == null)
@@ -45,28 +42,15 @@ namespace Drawing.Models
             Instance.Height = 2 * Radius;
             Instance.Stroke = _stroke;
             Instance.Fill = Brushes.Tomato;
-
-
         }
 
-        
-
-        public void ZoomIn(double multiple)
+        protected override void Zoom(double multiple)
         {
-            if(multiple < 1)
+            if (multiple <= 0)
             {
-                throw new ArgumentOutOfRangeException("放大倍数必须大于1。");
+                throw new ArgumentOutOfRangeException("缩放倍数必须大于0。");
             }
-            Radius = Radius * multiple;
-            Draw();
-        }
 
-        public void ZoomOut(double multiple)
-        {
-            if (multiple > 1 || multiple <= 0)
-            {
-                throw new ArgumentOutOfRangeException("缩小倍数必须介于0和1之间。");
-            }
             Radius = Radius * multiple;
             Draw();
         }
