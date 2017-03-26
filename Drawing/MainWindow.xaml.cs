@@ -18,9 +18,10 @@ namespace Drawing
         public MainWindow()
         {
             InitializeComponent();
+            _shapeFactory = ShapeFactory.Instance("");
             
         }
-
+        private ShapeFactory _shapeFactory = null;
         private Point initMousePoint; //鼠标起始位置坐标
         private Point currentMousePoint;    //当前鼠标坐标
         private double canvasInitTop;       //起始位置canvas坐标
@@ -42,10 +43,10 @@ namespace Drawing
             switch (type)
             {
                 case ShapeType.Circle:
-                    shape = new Circle(80); 
+                    shape = _shapeFactory.MakeCircle(80);
                     break;
                 case ShapeType.Rectangle:
-                    shape = new Models.Rectangle(150, 200);
+                    shape = _shapeFactory.MakeRectangle(100, 200);
                     break;
                 default:
                     throw new NotImplementedException();

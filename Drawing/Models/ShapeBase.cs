@@ -4,6 +4,7 @@ using System.Windows.Shapes;
 
 namespace Drawing.Models
 {
+    
     public abstract class ShapeBase: IShape
     {
         public double Top { get; set; }
