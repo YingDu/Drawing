@@ -25,6 +25,10 @@ namespace Drawing.Models
         {
             return new Rectangle(with, height);
         }
+        public virtual ShapeBase MakeLine(double x1,double y1,double x2,double y2)
+        {
+            return new Line(x1, y1, x2, y2);
+        }
 
         public static ShapeFactory Instance(string FactoryTypeStr)
         {

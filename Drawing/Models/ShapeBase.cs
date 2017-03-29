@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -13,13 +14,15 @@ namespace Drawing.Models
 
         public abstract double Area { get; } //只读
 
-        public abstract double Perimeter { get; }
+        public abstract double GetPerimeter();
 
         public Shape Instance { get; protected set; } //内部可设置
 
         protected Brush _stroke;
 
         public abstract void Draw();
+
+        public abstract ShapeBase Clone();
 
         public void ZoomIn(double multiple)
         {

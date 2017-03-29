@@ -4,5 +4,6 @@
     {
         Circle,
         Rectangle,
+        Line,
     }
 }

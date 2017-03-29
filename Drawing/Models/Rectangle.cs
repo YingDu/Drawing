@@ -15,20 +15,17 @@ namespace Drawing.Models
             }
         }
 
-        public override double Perimeter
+        public override double GetPerimeter()
         {
-            get
-            {
-                return 2 * (Width + Height);
-            }
+            return 2 * (Width + Height);
         }
-
 
         public Rectangle(double width, double height)
         {
             Width = width;
             Height = height;
         }
+       
 
         public override void Draw()
         {
@@ -53,5 +50,19 @@ namespace Drawing.Models
             Height = Height * multiple;
             Draw();
         }
+
+        public override ShapeBase Clone()
+        {
+            Rectangle cloned = this.MemberwiseClone() as Rectangle;
+            cloned.Instance = new System.Windows.Shapes.Rectangle();
+            Instance.Width = this.Width;
+            Instance.Height = this.Height;
+            Instance.Stroke = this._stroke;
+            Instance.Fill = Brushes.Tomato;
+            return cloned as Rectangle;
+        }
+            
+
+        
     }
 }

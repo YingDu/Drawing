@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -16,18 +17,31 @@ namespace Drawing.Models
             }
         }
 
-        
-        public override double Perimeter
+        public override double GetPerimeter()
         {
-            get
-            {
-                return 2 * Math.PI * Radius;
-            }
+            return 2 * Math.PI * Radius;
         }
-       
+
         public Circle(double radius)
         {
             Radius = radius;
+        }
+
+        public Circle(Circle target)
+        {
+            Radius = target.Radius;
+            Left = target.Left;
+            Top = target.Top;
+
+            Instance = new Ellipse()
+            {
+                Width = target.Instance.Width,
+                Height = target.Instance.Height,
+                Stroke = target.Instance.Stroke,
+                Fill = target.Instance.Fill
+            };
+            Instance.SetValue(Canvas.TopProperty, target.Instance.GetValue(Canvas.TopProperty));
+            Instance.SetValue(Canvas.LeftProperty, target.Instance.GetValue(Canvas.LeftProperty));
         }
 
         public override void Draw()
@@ -53,6 +67,11 @@ namespace Drawing.Models
 
             Radius = Radius * multiple;
             Draw();
+        }
+
+        public override ShapeBase Clone()
+        {
+            return new Circle(this);
         }
     }
 }

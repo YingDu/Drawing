@@ -19,7 +19,6 @@ namespace Drawing
         {
             InitializeComponent();
             _shapeFactory = ShapeFactory.Instance("");
-            
         }
         private ShapeFactory _shapeFactory = null;
         private Point initMousePoint; //鼠标起始位置坐标
@@ -36,7 +35,17 @@ namespace Drawing
         {
             CreateNewShape(ShapeType.Circle);
         }
-
+       
+        //画正方形
+        private void NewRectangle_Click(object sender, RoutedEventArgs e)
+        {
+            CreateNewShape(ShapeType.Rectangle);
+        }
+        //画线段
+        private void NewLine_Click(object sender, RoutedEventArgs e)
+        {
+            CreateNewShape(ShapeType.Line);
+        }
         private void CreateNewShape(ShapeType type)
         {
             ShapeBase shape = null;
@@ -47,6 +56,9 @@ namespace Drawing
                     break;
                 case ShapeType.Rectangle:
                     shape = _shapeFactory.MakeRectangle(100, 200);
+                    break;
+                case ShapeType.Line:
+                    shape = _shapeFactory.MakeLine(50, 50, 200, 200);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -64,32 +76,55 @@ namespace Drawing
             shape.Instance.MouseLeftButtonUp += ShapeInstance_MouseLeftButtonUp;
             shape.Instance.MouseMove += ShapeInstance_MouseMove;
 
-            shape.Instance.MouseLeftButtonUp += ShapeInstance_MouseLeftButtonUp;
-
             Stage.Children.Add(shape.Instance);
         }
 
-        //画正方形
-        private void NewRectangle_Click(object sender, RoutedEventArgs e)
-        {
-            CreateNewShape(ShapeType.Rectangle);
-        }
+      
 
+        //复制
+        private void Copy_Click(object sender, RoutedEventArgs e)
+        {
+            if (_selectedShape != null)
+            {
+
+                ShapeBase shape = _selectedShape.Clone();
+
+                shape.Draw();
+                _diagram.Add(shape);
+
+                canvasInitTop = _selectedShape.Top+10;
+                canvasInitLeft = _selectedShape.Left+10;
+                shape.Instance.SetValue(Canvas.TopProperty, canvasInitTop);
+                shape.Instance.SetValue(Canvas.LeftProperty, canvasInitLeft);
+
+                shape.Instance.MouseLeftButtonDown += ShapeInstance_MouseLeftButtonDown;
+                shape.Instance.MouseLeftButtonUp += ShapeInstance_MouseLeftButtonUp;
+                shape.Instance.MouseMove += ShapeInstance_MouseMove;
+
+                shape.Instance.MouseLeftButtonUp += ShapeInstance_MouseLeftButtonUp;
+
+                Stage.Children.Add(shape.Instance);
+            }
+            else
+            {
+                Status.Content = "请选择要复制的图形！";
+            }
+
+        }
         #region Zoom function
 
         //鼠标左键松开
         private void ShapeInstance_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            ShowAreaAndPerimeter();
             if (sender is Shape shape)
             {
                 shape.ReleaseMouseCapture();
-                shape.StrokeThickness = 1;
+                shape.StrokeThickness = 2;
             }
             if ((sender as Shape) != null)
             {
                 _selectedShape = _diagram.Where(s => s.Instance == (Shape)sender).FirstOrDefault();
-                
-                ShowArea.Text = "面积: " + _selectedShape.Area.ToString();
             }
         }
 
@@ -99,11 +134,11 @@ namespace Drawing
             if (_selectedShape != null)
             {
                 _selectedShape.ZoomIn(1.1);
-                ShowArea.Text = "面积: " + _selectedShape.Area.ToString();
+                ShowAreaAndPerimeter();
             }
             else
             {
-                MessageBox.Show("请选择图形！");
+                 Status.Content = "请选择图形！";
             }
         }
 
@@ -113,14 +148,22 @@ namespace Drawing
             if (_selectedShape != null)
             {
                 _selectedShape.ZoomOut(0.9);
-                ShowArea.Text = "面积: " + _selectedShape.Area.ToString();
+                ShowAreaAndPerimeter();
             }
             else
             {
-                MessageBox.Show("请选择图形！");
+                Status.Content = "请选择图形！";
             }
         }
         #endregion
+
+        private void ShowAreaAndPerimeter()
+        {
+            if (_selectedShape != null)
+            {
+                SelectedShapeInfo.Text = $"Area:{_selectedShape.Area}, Perimeter:{_selectedShape.GetPerimeter()}";
+            }
+        }
 
         #region Drag function
 
@@ -135,15 +178,24 @@ namespace Drawing
                 canvasInitLeft = Canvas.GetLeft(shape);
                 canvasInitTop = Canvas.GetTop(shape);
                 shape.RaiseEvent(new DragStartedEventArgs(0, 0));
-                shape.StrokeThickness = 3;
+                shape.StrokeThickness = 4;
 
                 //将选中的图形置于顶层
                 Canvas parent = shape.Parent as Canvas;
-                var maxZ = parent.Children.OfType<UIElement>()
-                    .Where(x => x != shape)
-                    .Select(x => Panel.GetZIndex(x))
-                    .Max();
-                Panel.SetZIndex(shape, maxZ + 1);                         
+                var zMax = 0;
+                foreach (var child in parent.Children)
+                {
+                    if (child is Shape instance && instance != shape)
+                    {
+                        var zIndex = Panel.GetZIndex(shape);
+                        if (zMax< zIndex)
+                        {
+                            zMax = zIndex;
+                        }
+                    }
+                }
+
+                Panel.SetZIndex(shape, zMax + 1);                         
             }
             e.Handled = true;
         }
@@ -162,5 +214,7 @@ namespace Drawing
         }
 
         #endregion
+
+       
     }
 }
