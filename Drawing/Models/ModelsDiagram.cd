@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Drawing.Models.Circle">
+    <Position X="1.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAgAAEAAAAAAAAAAAAAEAAAAAAQAAABA=</HashCode>
+      <FileName>Models\Circle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Drawing.Models.Line">
+    <Position X="5.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAEAADAAAAAIABAAEAAAAAAQAAABA=</HashCode>
+      <FileName>Models\Line.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Drawing.Models.Rectangle">
+    <Position X="3.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAAgAAEAAAAEAAAAAAAAEAAAAAAQAAABA=</HashCode>
+      <FileName>Models\Rectangle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Drawing.Models.ShapeBase" Collapsed="true">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAgAAEAQAAAAAAAAIAAGASAAAAQAAABA=</HashCode>
+      <FileName>Models\ShapeBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Drawing.Models.ShapeFactory">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAAAAAAAEAAQAAAAAAAAAAQQAAAAAAAAAA=</HashCode>
+      <FileName>Models\ShapeFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Drawing.Models.IShape">
+    <Position X="9.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAgAAAAAAAAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\IShape.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Drawing.Models.ShapeType">
+    <Position X="8.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAggAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Models\ShapeType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>

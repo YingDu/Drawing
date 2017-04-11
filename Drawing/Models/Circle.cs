@@ -56,6 +56,7 @@ namespace Drawing.Models
             Instance.Height = 2 * Radius;
             Instance.Stroke = _stroke;
             Instance.Fill = Brushes.Tomato;
+           
         }
 
         protected override void Zoom(double multiple)

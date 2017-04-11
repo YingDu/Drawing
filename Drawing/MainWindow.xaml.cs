@@ -1,4 +1,5 @@
 ﻿using Drawing.Models;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace Drawing
@@ -15,9 +17,12 @@ namespace Drawing
     /// </summary>
     public partial class MainWindow
     {
+        private ILog _logger = LogManager.GetLogger(typeof(MainWindow));
+
         public MainWindow()
         {
             InitializeComponent();
+
             _shapeFactory = ShapeFactory.Instance("");
         }
         private ShapeFactory _shapeFactory = null;
@@ -79,8 +84,6 @@ namespace Drawing
             Stage.Children.Add(shape.Instance);
         }
 
-      
-
         //复制
         private void Copy_Click(object sender, RoutedEventArgs e)
         {
@@ -116,11 +119,17 @@ namespace Drawing
         //鼠标左键松开
         private void ShapeInstance_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            _logger.Debug("Shape's mouse left button up event triggled.");
             ShowAreaAndPerimeter();
             if (sender is Shape shape)
             {
                 shape.ReleaseMouseCapture();
                 shape.StrokeThickness = 2;
+                FocusManager.SetFocusedElement(Stage, null);
+            }
+            if(sender is Shape ishape &&!(ishape is System.Windows.Shapes.Line))
+            {
+                ishape.StrokeThickness = 0;
             }
             if ((sender as Shape) != null)
             {
@@ -131,6 +140,7 @@ namespace Drawing
         //缩小
         private void ZoomIn_Click(object sender, RoutedEventArgs e)
         {
+            _logger.Debug("Shape's zoom in method was called.");
             if (_selectedShape != null)
             {
                 _selectedShape.ZoomIn(1.1);
@@ -145,6 +155,7 @@ namespace Drawing
         //放大
         private void ZoomOut_Click(object sender, RoutedEventArgs e)
         {
+            _logger.Debug("Shape's zoom out method was called.");
             if (_selectedShape != null)
             {
                 _selectedShape.ZoomOut(0.9);
@@ -170,32 +181,22 @@ namespace Drawing
         //鼠标左键点击选中图形
         private void ShapeInstance_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            _logger.Debug("Shape's mouse left button down event triggled.");
             if (sender is Shape shape && e.ClickCount == 1)
             {
                 shape.Focus();
                 shape.CaptureMouse();
+                FocusManager.SetFocusedElement(Stage, shape);
                 initMousePoint = e.GetPosition(this);
                 canvasInitLeft = Canvas.GetLeft(shape);
                 canvasInitTop = Canvas.GetTop(shape);
                 shape.RaiseEvent(new DragStartedEventArgs(0, 0));
-                shape.StrokeThickness = 4;
-
-                //将选中的图形置于顶层
-                Canvas parent = shape.Parent as Canvas;
-                var zMax = 0;
-                foreach (var child in parent.Children)
+                shape.StrokeThickness = 3;
+                if (!(shape is System.Windows.Shapes.Line))
                 {
-                    if (child is Shape instance && instance != shape)
-                    {
-                        var zIndex = Panel.GetZIndex(shape);
-                        if (zMax< zIndex)
-                        {
-                            zMax = zIndex;
-                        }
-                    }
+                    var strokeDashArry = new DoubleCollection { 2, 2 };
+                    shape.StrokeDashArray = strokeDashArry;
                 }
-
-                Panel.SetZIndex(shape, zMax + 1);                         
             }
             e.Handled = true;
         }
@@ -203,7 +204,9 @@ namespace Drawing
         //鼠标移动
         private void ShapeInstance_MouseMove(object sender, MouseEventArgs e)
         {
-            if (sender is Shape shape && e.LeftButton==MouseButtonState.Pressed)
+            _logger.Debug("Shape's mouse move event triggled.");
+            if (sender is Shape shape && e.LeftButton==MouseButtonState.Pressed
+                && shape.IsFocused)
             {
                 currentMousePoint = e.GetPosition(this);
                 double leftOffset = currentMousePoint.X - initMousePoint.X;
@@ -212,9 +215,6 @@ namespace Drawing
                 shape.SetValue(Canvas.LeftProperty, leftOffset + canvasInitLeft);
             }
         }
-
         #endregion
-
-       
     }
 }
