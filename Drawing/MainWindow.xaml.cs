@@ -26,26 +26,50 @@ namespace Drawing
             _shapeFactory = ShapeFactory.Instance("");
         }
         private ShapeFactory _shapeFactory = null;
-        private Point initMousePoint; //鼠标起始位置坐标
-        private Point currentMousePoint;    //当前鼠标坐标
-        private double canvasInitTop;       //起始位置canvas坐标
-        private double canvasInitLeft;      //当前位置canvas坐标
+        private Point _initMousePoint; //鼠标起始位置坐标
+        private Point _currentMousePoint;    //当前鼠标坐标
+        private double _canvasInitTop;       //起始位置canvas坐标
+        private double _canvasInitLeft;      //当前位置canvas坐标
 
         private List<ShapeBase> _diagram = new List<ShapeBase>();   //存储canvas上的图形
 
-        private ShapeBase _selectedShape;   //存储被选中的图形
+        private ShapeBase _selectedShape;   //缓存被选中的图形
+        private List<ShapeBase> _selectedShapes = new List<ShapeBase>(); //缓存被选中的图形组
+        private System.Windows.Shapes.Rectangle _selectedArea = new System.Windows.Shapes.Rectangle
+        {
+            Fill = Brushes.Tomato,
+            Opacity = 0.5,
+            Width = 0.1,
+            Height = 0.1
+        };
 
         //画圆
         private void NewCircle_Click(object sender, RoutedEventArgs e)
         {
             CreateNewShape(ShapeType.Circle);
         }
-       
+
         //画正方形
         private void NewRectangle_Click(object sender, RoutedEventArgs e)
         {
             CreateNewShape(ShapeType.Rectangle);
         }
+
+        private void CalcShapeSelection(Point start, Point end)
+        {
+            _selectedShapes.Clear();
+            foreach (var shape in _diagram)
+            {
+                var top = (double)shape.Instance.GetValue(Canvas.TopProperty);
+                var left = (double)shape.Instance.GetValue(Canvas.LeftProperty);
+                if (Math.Abs(end.Y - start.Y) > Math.Abs(top - start.Y)
+                 && Math.Abs(end.X - start.X) > Math.Abs(left - start.X))
+                {
+                    _selectedShapes.Add(shape);
+                }
+            }
+        }
+
         //画线段
         private void NewLine_Click(object sender, RoutedEventArgs e)
         {
@@ -68,14 +92,14 @@ namespace Drawing
                 default:
                     throw new NotImplementedException();
             }
-            
+
             shape.Draw();
             _diagram.Add(shape);
             var rnd = new Random();
-            canvasInitTop = 0;
-            canvasInitLeft = 0;
-            shape.Instance.SetValue(Canvas.TopProperty, canvasInitTop);
-            shape.Instance.SetValue(Canvas.LeftProperty, canvasInitLeft);
+            _canvasInitTop = 20;
+            _canvasInitLeft = 20;
+            shape.Instance.SetValue(Canvas.TopProperty, _canvasInitTop);
+            shape.Instance.SetValue(Canvas.LeftProperty, _canvasInitLeft);
 
             shape.Instance.MouseLeftButtonDown += ShapeInstance_MouseLeftButtonDown;
             shape.Instance.MouseLeftButtonUp += ShapeInstance_MouseLeftButtonUp;
@@ -95,10 +119,10 @@ namespace Drawing
                 shape.Draw();
                 _diagram.Add(shape);
 
-                canvasInitTop = _selectedShape.Top+10;
-                canvasInitLeft = _selectedShape.Left+10;
-                shape.Instance.SetValue(Canvas.TopProperty, canvasInitTop);
-                shape.Instance.SetValue(Canvas.LeftProperty, canvasInitLeft);
+                _canvasInitTop = _selectedShape.Top + 10;
+                _canvasInitLeft = _selectedShape.Left + 10;
+                shape.Instance.SetValue(Canvas.TopProperty, _canvasInitTop);
+                shape.Instance.SetValue(Canvas.LeftProperty, _canvasInitLeft);
 
                 shape.Instance.MouseLeftButtonDown += ShapeInstance_MouseLeftButtonDown;
                 shape.Instance.MouseLeftButtonUp += ShapeInstance_MouseLeftButtonUp;
@@ -127,7 +151,7 @@ namespace Drawing
                 shape.StrokeThickness = 2;
                 FocusManager.SetFocusedElement(Stage, null);
             }
-            if(sender is Shape ishape &&!(ishape is System.Windows.Shapes.Line))
+            if (sender is Shape ishape && !(ishape is System.Windows.Shapes.Line))
             {
                 ishape.StrokeThickness = 0;
             }
@@ -148,7 +172,7 @@ namespace Drawing
             }
             else
             {
-                 Status.Content = "请选择图形！";
+                Status.Content = "请选择图形！";
             }
         }
 
@@ -186,35 +210,98 @@ namespace Drawing
             {
                 shape.Focus();
                 shape.CaptureMouse();
-                FocusManager.SetFocusedElement(Stage, shape);
-                initMousePoint = e.GetPosition(this);
-                canvasInitLeft = Canvas.GetLeft(shape);
-                canvasInitTop = Canvas.GetTop(shape);
+                _initMousePoint = e.GetPosition(this);
+                _canvasInitLeft = Canvas.GetLeft(shape);
+                _canvasInitTop = Canvas.GetTop(shape);
                 shape.RaiseEvent(new DragStartedEventArgs(0, 0));
-                shape.StrokeThickness = 3;
-                if (!(shape is System.Windows.Shapes.Line))
-                {
-                    var strokeDashArry = new DoubleCollection { 2, 2 };
-                    shape.StrokeDashArray = strokeDashArry;
-                }
+                DrawSelectedSytle(shape);
             }
             e.Handled = true;
+        }
+
+        private void DrawSelectedSytle(Shape shape)
+        {
+            shape.StrokeThickness = 3;
+            if (!(shape is System.Windows.Shapes.Line))
+            {
+                DrawSelectionStyle(shape);
+            }
+            FocusManager.SetFocusedElement(Stage, shape);
+        }
+
+        private static void DrawSelectionStyle(Shape shape)
+        {
+            var strokeDashArry = new DoubleCollection { 2, 2 };
+            shape.StrokeDashArray = strokeDashArry;
         }
 
         //鼠标移动
         private void ShapeInstance_MouseMove(object sender, MouseEventArgs e)
         {
             _logger.Debug("Shape's mouse move event triggled.");
-            if (sender is Shape shape && e.LeftButton==MouseButtonState.Pressed
-                && shape.IsFocused)
+            if (sender is Shape shape && e.LeftButton == MouseButtonState.Pressed && shape.IsFocused)
             {
-                currentMousePoint = e.GetPosition(this);
-                double leftOffset = currentMousePoint.X - initMousePoint.X;
-                double topOffset = currentMousePoint.Y - initMousePoint.Y;
-                shape.SetValue(Canvas.TopProperty, topOffset + canvasInitTop);
-                shape.SetValue(Canvas.LeftProperty, leftOffset + canvasInitLeft);
+                _currentMousePoint = e.GetPosition(this);
+                double leftOffset = _currentMousePoint.X - _initMousePoint.X;
+                double topOffset = _currentMousePoint.Y - _initMousePoint.Y;
+                shape.SetValue(Canvas.TopProperty, topOffset + _canvasInitTop);
+                shape.SetValue(Canvas.LeftProperty, leftOffset + _canvasInitLeft);
             }
         }
         #endregion
+
+        private void Stage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 1)
+            {
+                _initMousePoint = e.GetPosition(Stage);
+                var strokeDashArry = new DoubleCollection { 2, 2 };
+                if (!Stage.Children.Contains(_selectedArea))
+                {
+                    Stage.Children.Add(_selectedArea);
+                }
+                _selectedArea.SetValue(Canvas.TopProperty, _initMousePoint.Y);
+                _selectedArea.SetValue(Canvas.LeftProperty, _initMousePoint.X);
+            }
+        }
+
+        private void Stage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 1)
+            {
+                _currentMousePoint = e.GetPosition(Stage);
+                CalcShapeSelection(_initMousePoint, _currentMousePoint);
+                foreach (var shape in _selectedShapes)
+                {
+                    DrawSelectedSytle(shape.Instance);
+                }
+
+                if (Stage.Children.Contains(_selectedArea))
+                {
+                    Stage.Children.Remove(_selectedArea);
+                }
+            }
+        }
+
+        private void Stage_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && _selectedArea != null)
+            {
+                var current = e.GetPosition(Stage);
+
+                _selectedArea.Width = Math.Abs(current.X - _initMousePoint.X);
+                _selectedArea.Height = Math.Abs(current.Y - _initMousePoint.Y);
+
+                if (current.X <= _initMousePoint.X)
+                {
+                    _selectedArea.SetValue(Canvas.LeftProperty, _initMousePoint.X - _selectedArea.Width);
+                }
+
+                if (current.Y <= _initMousePoint.Y)
+                {
+                    _selectedArea.SetValue(Canvas.TopProperty, _initMousePoint.Y - _selectedArea.Height);
+                }
+            }
+        }
     }
 }

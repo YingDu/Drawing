@@ -81,7 +81,12 @@
             </Button>
 
         </StackPanel>
-        <Canvas Name="Stage" Grid.Row="1">
+        <Canvas
+            Name="Stage"
+            Grid.Row="1"
+            MouseLeftButtonDown="Stage_MouseLeftButtonDown"
+            MouseLeftButtonUp="Stage_MouseLeftButtonUp"
+            MouseMove="Stage_MouseMove">
             <Canvas.Background>
                 <VisualBrush
                     TileMode="Tile"
