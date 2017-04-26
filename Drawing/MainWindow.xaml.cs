@@ -303,5 +303,16 @@ namespace Drawing
                 }
             }
         }
+        //组合
+        
+        private void Composite_Click(object sender, RoutedEventArgs e)
+        {
+            CompositeShape compShape = new CompositeShape();
+            foreach(var shape in _selectedShapes)
+            {
+                compShape.Add(shape);
+            }
+            compShape.Draw();
+        }
     }
 }

@@ -79,6 +79,16 @@
                     </Rectangle.Fill>
                 </Rectangle>
             </Button>
+            <Button
+                Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                Click="Composite_Click"
+                Style="{DynamicResource MetroCircleButtonStyle}">
+                <Rectangle Width="27" Height="27">
+                    <Rectangle.Fill>
+                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_align_center}" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Button>
 
         </StackPanel>
         <Canvas
