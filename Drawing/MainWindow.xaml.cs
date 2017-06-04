@@ -1,9 +1,7 @@
 ﻿using Drawing.Models;
 using log4net;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,9 +24,6 @@ namespace Drawing
             InitializeComponent();
 
             _shapeFactory = ShapeFactory.Instance("");
-
-            var guid = Guid.NewGuid();
-            MessageBox.Show($"{guid.ToString("D")}: {guid.ToString("D").Length}");
         }
         private ShapeFactory _shapeFactory = null;
         private Point _initMousePoint; //鼠标起始位置坐标
@@ -320,11 +315,11 @@ namespace Drawing
             }
         }
         //组合
-        
+
         private void Composite_Click(object sender, RoutedEventArgs e)
         {
             CompositeShape compShape = new CompositeShape();
-            foreach(var shape in _selectedShapes)
+            foreach (var shape in _selectedShapes)
             {
                 compShape.Add(shape);
             }
@@ -333,18 +328,22 @@ namespace Drawing
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            var json = JsonConvert.SerializeObject(_diagram, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-            File.WriteAllText("my-shape.json", json, System.Text.Encoding.UTF8);
+            var saveDialog = new SaveWindow(_diagram);
+            saveDialog.ShowDialog();
         }
 
         private void Open_Click(object sender, RoutedEventArgs e)
         {
-            var json = File.ReadAllText("my-shape.json", System.Text.Encoding.UTF8);
-            var diagram = (List<ShapeBase>)JsonConvert.DeserializeObject(json, new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All });
-            ClearStage();
-            foreach (var shape in diagram)
+            var openDialog = new OpenWindow();
+            if (openDialog.ShowDialog() == true)
             {
-                DrawOnStage(shape);
+                ClearStage();
+                var diagram = openDialog.SelectedDiagram;
+
+                foreach (var shape in diagram.Shapes)
+                {
+                    DrawOnStage(shape);
+                }
             }
         }
 
