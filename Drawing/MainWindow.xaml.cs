@@ -26,6 +26,9 @@ namespace Drawing
             InitializeComponent();
 
             _shapeFactory = ShapeFactory.Instance("");
+
+            var guid = Guid.NewGuid();
+            MessageBox.Show($"{guid.ToString("D")}: {guid.ToString("D").Length}");
         }
         private ShapeFactory _shapeFactory = null;
         private Point _initMousePoint; //鼠标起始位置坐标
