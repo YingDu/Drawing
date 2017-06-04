@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -22,6 +23,7 @@ namespace Drawing.Models
             return 2 * Math.PI * Radius;
         }
 
+        [JsonConstructor]
         public Circle(double radius)
         {
             Radius = radius;

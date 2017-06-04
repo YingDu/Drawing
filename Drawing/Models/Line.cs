@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using Newtonsoft.Json;
+using System;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace Drawing.Models
 {
@@ -16,7 +11,8 @@ namespace Drawing.Models
         public double Y1 { get; private set; }
         public double X2 { get; private set; }
         public double Y2 { get; private set; }
-       
+
+        [JsonConstructor]
         public Line(double x1,double y1,double x2,double y2)
         {
             X1 = x1;
@@ -54,8 +50,6 @@ namespace Drawing.Models
 
         public override ShapeBase Clone()
         {
-           
-
             Line cloned = this.MemberwiseClone() as Line;
             cloned.Instance = new System.Windows.Shapes.Line();
             System.Windows.Shapes.Line myline = (System.Windows.Shapes.Line)Instance;
@@ -69,7 +63,6 @@ namespace Drawing.Models
             return cloned as Line;
         }
 
-      
 
         protected override void Zoom(double multiple)
         {

@@ -1,7 +1,9 @@
 ﻿using Drawing.Models;
 using log4net;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -93,13 +95,19 @@ namespace Drawing
                     throw new NotImplementedException();
             }
 
-            shape.Draw();
-            _diagram.Add(shape);
-            var rnd = new Random();
             _canvasInitTop = 20;
             _canvasInitLeft = 20;
-            shape.Instance.SetValue(Canvas.TopProperty, _canvasInitTop);
-            shape.Instance.SetValue(Canvas.LeftProperty, _canvasInitLeft);
+            shape.Left = _canvasInitLeft;
+            shape.Top = _canvasInitTop;
+            DrawOnStage(shape);
+        }
+
+        private void DrawOnStage(ShapeBase shape)
+        {
+            shape.Draw();
+            _diagram.Add(shape);
+            shape.Instance.SetValue(Canvas.TopProperty, shape.Top);
+            shape.Instance.SetValue(Canvas.LeftProperty, shape.Left);
 
             shape.Instance.MouseLeftButtonDown += ShapeInstance_MouseLeftButtonDown;
             shape.Instance.MouseLeftButtonUp += ShapeInstance_MouseLeftButtonUp;
@@ -244,8 +252,13 @@ namespace Drawing
                 _currentMousePoint = e.GetPosition(this);
                 double leftOffset = _currentMousePoint.X - _initMousePoint.X;
                 double topOffset = _currentMousePoint.Y - _initMousePoint.Y;
-                shape.SetValue(Canvas.TopProperty, topOffset + _canvasInitTop);
-                shape.SetValue(Canvas.LeftProperty, leftOffset + _canvasInitLeft);
+
+                var selectedShape = _diagram.Where(s => s.Instance == (Shape)sender).FirstOrDefault();
+                selectedShape.Left = leftOffset + _canvasInitLeft;
+                selectedShape.Top = topOffset + _canvasInitTop;
+
+                shape.SetValue(Canvas.TopProperty, selectedShape.Top);
+                shape.SetValue(Canvas.LeftProperty, selectedShape.Left);
             }
         }
         #endregion
@@ -313,6 +326,29 @@ namespace Drawing
                 compShape.Add(shape);
             }
             compShape.Draw();
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            var json = JsonConvert.SerializeObject(_diagram, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+            File.WriteAllText("my-shape.json", json, System.Text.Encoding.UTF8);
+        }
+
+        private void Open_Click(object sender, RoutedEventArgs e)
+        {
+            var json = File.ReadAllText("my-shape.json", System.Text.Encoding.UTF8);
+            var diagram = (List<ShapeBase>)JsonConvert.DeserializeObject(json, new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All });
+            ClearStage();
+            foreach (var shape in diagram)
+            {
+                DrawOnStage(shape);
+            }
+        }
+
+        private void ClearStage()
+        {
+            _diagram.Clear();
+            Stage.Children.Clear();
         }
     }
 }

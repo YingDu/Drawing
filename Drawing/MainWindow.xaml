@@ -89,6 +89,26 @@
                     </Rectangle.Fill>
                 </Rectangle>
             </Button>
+            <Button
+                Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                Click="Save_Click"
+                Style="{DynamicResource MetroCircleButtonStyle}">
+                <Rectangle Width="27" Height="27">
+                    <Rectangle.Fill>
+                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_save}" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Button>
+            <Button
+                Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                Click="Open_Click"
+                Style="{DynamicResource MetroCircleButtonStyle}">
+                <Rectangle Width="27" Height="27">
+                    <Rectangle.Fill>
+                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_folder_open}" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Button>
 
         </StackPanel>
         <Canvas

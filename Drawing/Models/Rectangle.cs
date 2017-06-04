@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Windows.Media;
 
 namespace Drawing.Models
@@ -20,6 +21,7 @@ namespace Drawing.Models
             return 2 * (Width + Height);
         }
 
+        [JsonConstructor]
         public Rectangle(double width, double height)
         {
             Width = width;

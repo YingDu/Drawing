@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -16,6 +17,7 @@ namespace Drawing.Models
 
         public abstract double GetPerimeter();
 
+        [JsonIgnore]
         public Shape Instance { get; protected set; } //内部可设置
 
         protected Brush _stroke;
