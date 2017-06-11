@@ -77,8 +77,9 @@
     <Compile Include="GuidUtil.cs" />
     <Compile Include="Models\Circle.cs" />
     <Compile Include="Models\CompositeShape.cs" />
+    <Compile Include="Models\Decorator.cs" />
     <Compile Include="Models\Diagram.cs" />
-    <Compile Include="Models\IShape.cs" />
+    <Compile Include="Models\IDrawable.cs" />
     <Compile Include="Models\Line.cs" />
     <Compile Include="Models\Rectangle.cs" />
     <Compile Include="Models\ShapeBase.cs" />

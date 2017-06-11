@@ -7,7 +7,7 @@ using System.Windows.Shapes;
 namespace Drawing.Models
 {
     
-    public abstract class ShapeBase: IShape
+    public abstract class ShapeBase: IDrawable
     {
         public double Top { get; set; }
 
@@ -26,6 +26,10 @@ namespace Drawing.Models
 
         public abstract ShapeBase Clone();
 
+        /// <summary>
+        /// 将图形放大到指定倍数
+        /// </summary>
+        /// <param name="multiple">放大倍数</param>
         public void ZoomIn(double multiple)
         {
             if (multiple < 1)
@@ -36,6 +40,10 @@ namespace Drawing.Models
             Draw();
         }
 
+        /// <summary>
+        /// 将图形缩小到指定倍数
+        /// </summary>
+        /// <param name="multiple">缩小倍数</param>
         public void ZoomOut(double multiple)
         {
             if (multiple > 1 || multiple <= 0)

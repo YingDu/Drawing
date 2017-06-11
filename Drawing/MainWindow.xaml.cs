@@ -349,5 +349,22 @@ namespace Drawing
             _diagram.Clear();
             Stage.Children.Clear();
         }
+
+        private void Opacity_Click(object sender, RoutedEventArgs e)
+        {
+            if(_selectedShape!= null)
+            {
+                Drawing.Models.Decorator shapeDecorator = new OpacityDecorator(_selectedShape);
+                shapeDecorator.Draw();
+            }
+            if (_selectedShapes?.Count > 0)
+            {
+                foreach (var shape in _selectedShapes)
+                {
+                    Drawing.Models.Decorator shapeDecorator = new OpacityDecorator(shape);
+                    shapeDecorator.Draw();
+                }
+            }
+        }
     }
 }
