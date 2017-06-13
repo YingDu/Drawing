@@ -24,10 +24,10 @@ namespace Drawing
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            var diagram = _storageService.GetByName(Name.Text.Trim());
+            var diagram = _storageService.GetByName(DrawingName.Text.Trim());
             if (diagram != null)
             {
-                if (MessageBox.Show($"已经存在名为：'{Name.Text.Trim()}'的图形，确定覆盖现有图形？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                if (MessageBox.Show($"已经存在名为：'{DrawingName.Text.Trim()}'的图形，确定覆盖现有图形？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
                     diagram.Shapes = _shapes;
                     _storageService.Update(diagram);
@@ -41,7 +41,7 @@ namespace Drawing
             diagram = new Diagram
             {
                 Id = Guid.NewGuid(),
-                Name = Name.Text.Trim(),
+                Name = DrawingName.Text.Trim(),
                 Shapes = _shapes
             };
             _storageService.Add(diagram);

@@ -1,12 +1,14 @@
 ﻿<metro:MetroWindow x:Class="Drawing.OpenWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
-                   xmlns:converters="clr-namespace:Drawing"
-                   Title="打开" Height="320" Width="480"
-                   ShowInTaskbar="False"
-                   ShowMinButton="False" ShowMaxRestoreButton="False"
-                   WindowStartupLocation="CenterScreen" >
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:converters="clr-namespace:Drawing"
+        Title="打开"
+        Height="320" Width="480"
+        ShowInTaskbar="False"
+        ShowMinButton="False"
+        ShowMaxRestoreButton="False"
+        WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <converters:GuidStringUpperCaseConverter x:Key="UpperCaseConvert"/>
     </Window.Resources>

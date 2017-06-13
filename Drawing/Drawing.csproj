@@ -80,6 +80,7 @@
     <Compile Include="Models\Decorator.cs" />
     <Compile Include="Models\Diagram.cs" />
     <Compile Include="Models\IDrawable.cs" />
+    <Compile Include="Models\Iterator.cs" />
     <Compile Include="Models\Line.cs" />
     <Compile Include="Models\Rectangle.cs" />
     <Compile Include="Models\ShapeBase.cs" />

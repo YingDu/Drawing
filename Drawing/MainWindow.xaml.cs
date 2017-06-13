@@ -354,14 +354,15 @@ namespace Drawing
         {
             if(_selectedShape!= null)
             {
-                Drawing.Models.Decorator shapeDecorator = new OpacityDecorator(_selectedShape);
+                Models.Decorator shapeDecorator = new OpacityDecorator(_selectedShape);
                 shapeDecorator.Draw();
             }
+
             if (_selectedShapes?.Count > 0)
             {
                 foreach (var shape in _selectedShapes)
                 {
-                    Drawing.Models.Decorator shapeDecorator = new OpacityDecorator(shape);
+                    Models.Decorator shapeDecorator = new OpacityDecorator(shape);
                     shapeDecorator.Draw();
                 }
             }
