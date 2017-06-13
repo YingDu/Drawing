@@ -17,6 +17,8 @@ namespace Drawing.Models
 
         public abstract double GetPerimeter();
 
+        public IDrawable Parent { get; set; }
+
         [JsonIgnore]
         public Shape Instance { get; protected set; } //内部可设置
 

@@ -40,13 +40,17 @@ namespace Drawing
             Height = 0.1
         };
 
-        //画圆
+        /// <summary>
+        /// 画圆
+        /// </summary>
         private void NewCircle_Click(object sender, RoutedEventArgs e)
         {
             CreateNewShape(ShapeType.Circle);
         }
 
-        //画正方形
+        /// <summary>
+        /// 画正方形
+        /// </summary>
         private void NewRectangle_Click(object sender, RoutedEventArgs e)
         {
             CreateNewShape(ShapeType.Rectangle);
@@ -67,11 +71,14 @@ namespace Drawing
             }
         }
 
-        //画线段
+        /// <summary>
+        /// 画线段
+        /// </summary>
         private void NewLine_Click(object sender, RoutedEventArgs e)
         {
             CreateNewShape(ShapeType.Line);
         }
+
         private void CreateNewShape(ShapeType type)
         {
             ShapeBase shape = null;
@@ -84,7 +91,7 @@ namespace Drawing
                     shape = ShapeFactory.Instance.CreateRectangle(100, 200);
                     break;
                 case ShapeType.Line:
-                    shape = ShapeFactory.Instance.CreateLine(50, 50, 200, 200); 
+                    shape = ShapeFactory.Instance.CreateLine(50, 50, 200, 200);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -111,7 +118,9 @@ namespace Drawing
             Stage.Children.Add(shape.Instance);
         }
 
-        //复制
+        /// <summary>
+        /// 复制
+        /// </summary>
         private void Copy_Click(object sender, RoutedEventArgs e)
         {
             if (_selectedShape != null)
@@ -141,6 +150,7 @@ namespace Drawing
             }
 
         }
+
         #region Zoom function
 
         //鼠标左键松开
@@ -311,13 +321,16 @@ namespace Drawing
                 }
             }
         }
-        //组合
 
+        /// <summary>
+        /// 组合
+        /// </summary>
         private void Composite_Click(object sender, RoutedEventArgs e)
         {
             CompositeShape compShape = new CompositeShape();
             foreach (var shape in _selectedShapes)
             {
+                shape.Parent = compShape;
                 compShape.Add(shape);
             }
             compShape.Draw();
@@ -352,17 +365,32 @@ namespace Drawing
 
         private void Opacity_Click(object sender, RoutedEventArgs e)
         {
-            if(_selectedShape!= null)
+            Models.Decorator shapeDecorator = null;
+            if (_selectedShape != null)
             {
-                Models.Decorator shapeDecorator = new OpacityDecorator(_selectedShape);
+                if (_selectedShape.Parent is CompositeShape compositeShape)
+                {
+                    IIterator<ShapeBase> iterator = compositeShape.GetIterator();
+                    while (iterator.HasNext())
+                    {
+                        var shape = iterator.GetCurrent();
+                        shapeDecorator = new OpacityDecorator(shape);
+                        shapeDecorator.Draw();
+                        iterator.MoveNext();
+                    }
+                    return;
+                }
+
+                shapeDecorator = new OpacityDecorator(_selectedShape);
                 shapeDecorator.Draw();
+                return;
             }
 
             if (_selectedShapes?.Count > 0)
             {
                 foreach (var shape in _selectedShapes)
                 {
-                    Models.Decorator shapeDecorator = new OpacityDecorator(shape);
+                    shapeDecorator = new OpacityDecorator(shape);
                     shapeDecorator.Draw();
                 }
             }
