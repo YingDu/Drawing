@@ -6,13 +6,13 @@ namespace Drawing.Models
 {
     class CompositeShape : IDrawable, IIteratable<ShapeBase>
     {
-        List<ShapeBase> compositeShape = new List<ShapeBase>();
+        List<ShapeBase> _compositeShape = new List<ShapeBase>();
 
-        public int Length => compositeShape == null ? 0 : compositeShape.Count;
+        public int Length => _compositeShape == null ? 0 : _compositeShape.Count;
 
         public void Draw()
         {
-            foreach (ShapeBase shape in compositeShape)
+            foreach (ShapeBase shape in _compositeShape)
             {
                 shape.Draw();
                 shape.Instance.Fill = Brushes.Blue;
@@ -21,12 +21,12 @@ namespace Drawing.Models
 
         public void Add(ShapeBase shape)
         {
-            compositeShape.Add(shape);
+            _compositeShape.Add(shape);
         }
 
         public void Remove(ShapeBase shape)
         {
-            compositeShape.Remove(shape);
+            _compositeShape.Remove(shape);
         }
 
         public IIterator<ShapeBase> GetIterator()
@@ -40,7 +40,7 @@ namespace Drawing.Models
             {
                 throw new ArgumentOutOfRangeException("index out of range.");
             }
-            return compositeShape[index];
+            return _compositeShape[index];
         }
     }
 
